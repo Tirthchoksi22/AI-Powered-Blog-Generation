@@ -14,6 +14,7 @@ app.use(cors({
         'http://127.0.0.1:5173', 
         'http://localhost:8081', 
         'http://127.0.0.1:8081',
+        'https://ai-powered-blog-generation.vercel.app',
         'https://ai-powered-blog-generation-g2of-6zncjqqdy.vercel.app'
     ], // Add your frontend URLs
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -24,7 +25,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/user', userRouter);
 app.use('/blog',blogRouter);
-console.log('hii');
+console.log('App configured successfully');
 
 export default app;
 

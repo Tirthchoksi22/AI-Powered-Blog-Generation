@@ -20,22 +20,26 @@ const registerUser = async (req,res)=>{
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
-const key = "tirth1234"
 
 const loginUser = async (req,res)=>{
     try {
         const {email, password}= req.body
         const User = await user.findOne({ email, password });
         if (!User) return res.status(400).json({ error: 'Invalid credentials' });
+        
+        // Use JWT_KEY from environment variables
+        const key = process.env.JWT_KEY;
+        if (!key) {
+            console.error('JWT_KEY is not set in environment variables');
+            return res.status(500).json({ error: 'Server configuration error' });
+        }
+        
         const token = jwt.sign({ id: User._id }, key);
         res.status(200).json({ token });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
         console.log(error);
-        
     }
 }
-
-
 
 export {loginUser, registerUser}
