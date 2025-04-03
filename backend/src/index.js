@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import app from './app.js';
+import connectDb from './config/db.js';
 
 // Load environment variables
 dotenv.config();
@@ -11,6 +12,15 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Connect to MongoDB
+connectDb()
+  .then(() => {
+    // Start the server after successful database connection
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to connect to MongoDB:', error);
+    process.exit(1);
+  });
