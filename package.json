@@ -1,0 +1,23 @@
+{
+  "name": "bloggenie",
+  "version": "1.0.0",
+  "description": "AI-Powered Blog Generation Tool",
+  "scripts": {
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd Frontend/blog-genie-magic-write-main && npm run dev",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "install:all": "npm install && cd backend && npm install && cd ../Frontend/blog-genie-magic-write-main && npm install"
+  },
+  "keywords": [
+    "AI",
+    "Blog",
+    "Generation",
+    "React",
+    "Node.js"
+  ],
+  "author": "Tirth Choksi",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
