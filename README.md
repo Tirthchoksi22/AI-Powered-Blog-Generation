@@ -97,3 +97,4 @@ npm run frontend
 
 - **Backend**: Node.js, Express, MongoDB, Groq API
 - **Frontend**: React, TypeScript, Vite, Tailwind CSS, Shadcn UI 
+<!-- GitAds-Verify: OJTSTRCS92VPVDPUJFPAMFHBZD8R8ICH -->
