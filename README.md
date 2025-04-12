@@ -98,3 +98,6 @@ npm run frontend
 - **Backend**: Node.js, Express, MongoDB, Groq API
 - **Frontend**: React, TypeScript, Vite, Tailwind CSS, Shadcn UI 
 <!-- GitAds-Verify: OJTSTRCS92VPVDPUJFPAMFHBZD8R8ICH -->
+## GitAds Sponsored
+[![Sponsored by GitAds](https://gitads.dev/v1/ad-serve?source=tirthchoksi22/ai-powered-blog-generation@github)](https://gitads.dev/v1/ad-track?source=tirthchoksi22/ai-powered-blog-generation@github)
+
