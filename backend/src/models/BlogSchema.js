@@ -12,12 +12,23 @@ const blogSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    tone: {
+        type: String,
+        default: 'informative',
+    },
+    length: {
+        type: Number,
+        default: 500,
+    },
+    keywords: {
+        type: String,
+        default: '',
+    },
     author: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User' 
     }
-
-})
+}, { timestamps: true })
 
 const blog  = mongoose.model("Blog", blogSchema)
 

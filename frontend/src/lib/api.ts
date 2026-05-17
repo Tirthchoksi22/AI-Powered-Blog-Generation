@@ -41,6 +41,18 @@ export const blogAPI = {
     });
     return response.data;
   },
+  getHistory: async () => {
+    const response = await api.get('/blog/history');
+    return response.data;
+  },
+  deleteBlog: async (id: string) => {
+    const response = await api.delete(`/blog/history/${id}`);
+    return response.data;
+  },
+  clearHistory: async () => {
+    const response = await api.delete('/blog/history');
+    return response.data;
+  },
 };
 
 export default api; 

@@ -4,9 +4,9 @@
   "description": "AI-Powered Blog Generation Tool",
   "scripts": {
     "backend": "cd backend && npm run dev",
-    "frontend": "cd Frontend/blog-genie-magic-write-main && npm run dev",
+    "frontend": "cd frontend && npm run dev",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "install:all": "npm install && cd backend && npm install && cd ../Frontend/blog-genie-magic-write-main && npm install"
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
   },
   "keywords": [
     "AI",

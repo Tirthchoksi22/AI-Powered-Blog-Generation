@@ -12,12 +12,19 @@ const generateBlog = async (req, res) => {
       return res.status(400).json({ error: "Blog title is required" });
     }
 
-    // Generate prompt for AI model
-    let prompt = `Write a ${tone || "informative"} blog post about "${title}". The blog should be approximately ${length || 500} words in length.`;
-    
+    // Generate upgraded prompt for AI model
+    let prompt = `You are an expert content writer and professional blogger. 
+Write a highly engaging and ${tone || "informative"} blog post about "${title}". 
+
+Requirements:
+- The blog must be approximately ${length || 500} words in length.
+- Use a clear structure: an engaging introduction, well-organized body paragraphs with Markdown headings (##), and a strong conclusion.
+- Use Markdown bolding (**text**) for emphasis where appropriate.
+- Maintain a consistent ${tone || "informative"} tone throughout.`;
+
     // Add keywords to prompt if provided
     if (keywords && keywords.trim()) {
-      prompt += ` Include these keywords: ${keywords}.`;
+      prompt += `\n- Seamlessly and naturally integrate the following keywords: ${keywords}.`;
     }
 
     console.log("Sending prompt to Groq:", prompt);
@@ -30,7 +37,7 @@ const generateBlog = async (req, res) => {
           content: prompt,
         },
       ],
-      model: "llama3-70b-8192", // Updated to use a currently supported model
+      model: "openai/gpt-oss-120b", // Updated from decommissioned model
       temperature: 0.7,
       max_tokens: 2048,
       top_p: 1,
@@ -44,6 +51,9 @@ const generateBlog = async (req, res) => {
     const newBlog = new blog({
       title: title,
       content: blogContent,
+      tone: tone || "informative",
+      length: length || 500,
+      keywords: keywords || "",
       author: userID, // Assign the user ID as the author
     });
     await newBlog.save();
@@ -59,10 +69,71 @@ const generateBlog = async (req, res) => {
     });
   } catch (error) {
     console.error("Error generating blog:", error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: "Failed to generate blog content",
-      details: error.message 
+      details: error.message
     });
+  }
+};
+
+export const getHistory = async (req, res) => {
+  try {
+    const userID = req.userId;
+    const history = await blog.find({ author: userID }).sort({ createdAt: -1 });
+
+    // Map the MongoDB objects to match the frontend BlogEntry interface
+    const formattedHistory = history.map(item => ({
+      id: item._id,
+      title: item.title,
+      content: item.content,
+      tone: item.tone || 'informative',
+      length: item.length || 500,
+      keywords: item.keywords || 'None',
+      date: item.createdAt || new Date().toISOString()
+    }));
+
+    return res.status(200).json(formattedHistory);
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    return res.status(500).json({ error: "Failed to fetch history" });
+  }
+};
+
+export const deleteBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userID = req.userId;
+
+    // Delete the blog
+    const deletedBlog = await blog.findOneAndDelete({ _id: id, author: userID });
+    if (!deletedBlog) {
+      return res.status(404).json({ error: "Blog not found or unauthorized" });
+    }
+
+    // Remove reference from user
+    await user.findByIdAndUpdate(userID, { $pull: { blogs: id } });
+
+    return res.status(200).json({ success: true, message: "Blog deleted" });
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    return res.status(500).json({ error: "Failed to delete blog" });
+  }
+};
+
+export const clearHistory = async (req, res) => {
+  try {
+    const userID = req.userId;
+
+    // Delete all blogs by this user
+    await blog.deleteMany({ author: userID });
+
+    // Clear all blog references from the user
+    await user.findByIdAndUpdate(userID, { $set: { blogs: [] } });
+
+    return res.status(200).json({ success: true, message: "History cleared" });
+  } catch (error) {
+    console.error("Error clearing history:", error);
+    return res.status(500).json({ error: "Failed to clear history" });
   }
 };
 

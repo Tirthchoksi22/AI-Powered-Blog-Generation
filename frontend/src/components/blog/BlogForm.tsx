@@ -50,18 +50,7 @@ const BlogForm = () => {
       const response = await blogAPI.generateBlog(title, tone, length, keywords);
       setGeneratedBlog(response.content);
 
-      // Save to history
-      const history = JSON.parse(localStorage.getItem("blogHistory") || "[]");
-      const newBlog = {
-        id: Date.now(),
-        title,
-        tone,
-        length,
-        keywords: keywords || "None",
-        content: response.content,
-        date: new Date().toISOString(),
-      };
-      localStorage.setItem("blogHistory", JSON.stringify([newBlog, ...history]));
+      // Blog is automatically saved to the database by the backend
 
       toast({
         title: "Blog generated",

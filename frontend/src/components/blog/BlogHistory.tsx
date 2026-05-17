@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { blogAPI } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface BlogEntry {
-  id: number;
+  id: string;
   title: string;
   tone: string;
   length: number;
@@ -39,12 +40,28 @@ const BlogHistory = () => {
   const [blogHistory, setBlogHistory] = useState<BlogEntry[]>([]);
   const [filteredHistory, setFilteredHistory] = useState<BlogEntry[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
+  const fetchHistory = async () => {
+    try {
+      setIsLoading(true);
+      const history = await blogAPI.getHistory();
+      setBlogHistory(history);
+      setFilteredHistory(history);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch blog history",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const history = JSON.parse(localStorage.getItem("blogHistory") || "[]");
-    setBlogHistory(history);
-    setFilteredHistory(history);
+    fetchHistory();
   }, []);
 
   useEffect(() => {
@@ -60,25 +77,41 @@ const BlogHistory = () => {
     }
   }, [searchTerm, blogHistory]);
 
-  const handleDeleteBlog = (id: number) => {
-    const updatedHistory = blogHistory.filter((blog) => blog.id !== id);
-    setBlogHistory(updatedHistory);
-    setFilteredHistory(updatedHistory);
-    localStorage.setItem("blogHistory", JSON.stringify(updatedHistory));
-    toast({
-      title: "Blog deleted",
-      description: "Blog post has been deleted from your history",
-    });
+  const handleDeleteBlog = async (id: string) => {
+    try {
+      await blogAPI.deleteBlog(id);
+      const updatedHistory = blogHistory.filter((blog) => blog.id !== id);
+      setBlogHistory(updatedHistory);
+      setFilteredHistory(updatedHistory);
+      toast({
+        title: "Blog deleted",
+        description: "Blog post has been deleted from your history",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete blog",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleClearHistory = () => {
-    setBlogHistory([]);
-    setFilteredHistory([]);
-    localStorage.setItem("blogHistory", JSON.stringify([]));
-    toast({
-      title: "History cleared",
-      description: "All blog posts have been cleared from your history",
-    });
+  const handleClearHistory = async () => {
+    try {
+      await blogAPI.clearHistory();
+      setBlogHistory([]);
+      setFilteredHistory([]);
+      toast({
+        title: "History cleared",
+        description: "All blog posts have been cleared from your history",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to clear history",
+        variant: "destructive",
+      });
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -154,7 +187,16 @@ const BlogHistory = () => {
         </div>
       </div>
 
-      {filteredHistory.length === 0 ? (
+      {isLoading ? (
+        <Card className="border-dashed">
+          <CardContent className="pt-6 text-center">
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <History className="h-8 w-8 text-muted-foreground animate-pulse" />
+              <h3 className="text-xl font-medium">Loading history...</h3>
+            </div>
+          </CardContent>
+        </Card>
+      ) : filteredHistory.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="pt-6 text-center">
             <div className="flex flex-col items-center justify-center space-y-2">
