@@ -9,12 +9,12 @@ const auth = (req, res, next) => {
         return res.status(403).json({ error: 'Access Denied. No Token Provided.' });
     }
     
-    // Use JWT_KEY from environment variables
-    const key = process.env.JWT_KEY;
+    // Use JWT_KEY or JWT_SECRET from environment variables
+    const key = process.env.JWT_KEY || process.env.JWT_SECRET;
     
     if (!key) {
-        console.error('JWT_KEY is not set in environment variables');
-        return res.status(500).json({ error: 'Server configuration error' });
+        console.error('Neither JWT_KEY nor JWT_SECRET is set in environment variables');
+        return res.status(500).json({ error: 'Server configuration error: JWT key is missing' });
     }
 
     try {

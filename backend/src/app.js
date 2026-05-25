@@ -15,7 +15,8 @@ app.use(cors({
         'http://localhost:8081', 
         'http://127.0.0.1:8081',
         'https://ai-powered-blog-generation.vercel.app',
-        'https://ai-powered-blog-generation-g2of.vercel.app'
+        'https://ai-powered-blog-generation-g2of.vercel.app',
+        'https://ai-powered-blog-generation-5jgr.vercel.app',
     ], // Add your frontend URLs
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

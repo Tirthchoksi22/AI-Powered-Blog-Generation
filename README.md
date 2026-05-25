@@ -39,7 +39,7 @@ npm run install:all
      ```
      MONGODB_URI=your_mongodb_connection_string
      GROQ_API_KEY=your_groq_api_key
-     JWT_SECRET=your_jwt_secret
+     JWT_KEY=your_jwt_secret_key_or_jwt_secret
      ```
    - Create a `.env` file in the `Frontend/blog-genie-magic-write-main` directory with:
      ```
@@ -75,7 +75,7 @@ npm run frontend
 2. **Set up environment variables**
    - `MONGODB_URI`: Your MongoDB connection string
    - `GROQ_API_KEY`: Your Groq API key
-   - `JWT_SECRET`: A secret key for JWT token generation
+   - `JWT_KEY` or `JWT_SECRET`: A secret key for JWT token generation
 
 ### Frontend Deployment
 

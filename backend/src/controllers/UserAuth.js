@@ -27,11 +27,11 @@ const loginUser = async (req,res)=>{
         const User = await user.findOne({ email, password });
         if (!User) return res.status(400).json({ error: 'Invalid credentials' });
         
-        // Use JWT_KEY from environment variables
-        const key = process.env.JWT_KEY;
+        // Use JWT_KEY or JWT_SECRET from environment variables
+        const key = process.env.JWT_KEY || process.env.JWT_SECRET;
         if (!key) {
-            console.error('JWT_KEY is not set in environment variables');
-            return res.status(500).json({ error: 'Server configuration error' });
+            console.error('Neither JWT_KEY nor JWT_SECRET is set in environment variables');
+            return res.status(500).json({ error: 'Server configuration error: JWT key is missing' });
         }
         
         const token = jwt.sign({ id: User._id }, key);

@@ -29,20 +29,43 @@ Requirements:
 
     console.log("Sending prompt to Groq:", prompt);
 
-    // Generate blog content using AI
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      model: "openai/gpt-oss-120b", // Updated from decommissioned model
-      temperature: 0.7,
-      max_tokens: 2048,
-      top_p: 1,
-      stream: false, // Changed to false for simpler handling
-    });
+    // Generate blog content using AI with robust fallback models
+    const modelsToTry = [
+      "openai/gpt-oss-120b",
+      "llama-3.3-70b-versatile",
+      "llama-3.1-8b-instant"
+    ];
+
+    let chatCompletion = null;
+    let lastError = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        console.log(`Attempting blog generation with model: ${modelName}`);
+        chatCompletion = await groq.chat.completions.create({
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          model: modelName,
+          temperature: 0.7,
+          max_tokens: 2048,
+          top_p: 1,
+          stream: false,
+        });
+        console.log(`Successfully generated content using model: ${modelName}`);
+        break;
+      } catch (error) {
+        console.error(`Failed generation with model ${modelName}:`, error.message);
+        lastError = error;
+      }
+    }
+
+    if (!chatCompletion) {
+      throw new Error(`AI generation failed on all attempted models. Last error: ${lastError ? lastError.message : 'Unknown'}`);
+    }
 
     // Get the blog content from the response
     const blogContent = chatCompletion.choices[0]?.message?.content || "Failed to generate content";
